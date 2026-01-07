@@ -16,55 +16,62 @@ BUTTON_FONT = ("Arial", 14, "bold")
 LINK_FONT = ("Arial", 12)
 
 
-HISTORY_FILE = "history.txt"
+HISTORY_FILE = "encryption_history.txt"
+
 
 def open_history_screen():
-    history_win = tk.Toplevel()
+    history_win = tk.Toplevel(root)
     history_win.title("Encryption History")
     history_win.geometry("700x400")
     history_win.resizable(True, True)
 
-    container = tk.Frame(history_win, padx=20, pady=20)
-    container.pack(expand=True, fill="both")
+    frame = tk.Frame(history_win, padx=20, pady=20)
+    frame.pack(expand=True, fill="both")
 
     tk.Label(
-        container,
-        text="Encryption / Decryption History",
+        frame,
+        text="Encryption Activity History",
         font=("Arial", 16, "bold")
     ).pack(pady=10)
 
-    history_box = tk.Text(
-        container,
-        font=("Consolas", 11),
-        state="disabled",
-        wrap="word"
-    )
-    history_box.pack(expand=True, fill="both", pady=10)
+    history_box = tk.Text(frame, width=80, height=15)
+    history_box.pack(pady=10)
 
     def load_history():
-        history_box.config(state="normal")
         history_box.delete("1.0", "end")
-
         if os.path.exists(HISTORY_FILE):
             with open(HISTORY_FILE, "r") as f:
-                content = f.read().strip()
-                history_box.insert("end", content if content else "No history available.")
+                history_box.insert("end", f.read())
         else:
             history_box.insert("end", "No history available.")
-
-        history_box.config(state="disabled")
 
     def clear_history():
         if os.path.exists(HISTORY_FILE):
             open(HISTORY_FILE, "w").close()
-
-        history_box.config(state="normal")
-        history_box.delete("1.0", "end")
-        history_box.insert("end", "History cleared.")
-        history_box.config(state="disabled")
+        load_history()
 
     # Buttons
-    btn_frame = tk.Frame(container)
+    btn_frame = tk.Frame(frame)
+    btn_frame.pack(pady=10)
+
+    tk.Button(
+        btn_frame,
+        text="Clear History",
+        width=18,
+        command=clear_history
+    ).pack(side="left", padx=10)
+
+    tk.Button(
+        btn_frame,
+        text="Close",
+        width=18,
+        command=history_win.destroy
+    ).pack(side="left", padx=10)
+
+    load_history()
+
+ # Buttons
+    btn_frame = tk.Frame(frame)
     btn_frame.pack(pady=10)
 
     tk.Button(
@@ -281,6 +288,14 @@ def open_dashboard():
     encrypt_image_btn.config(command=lambda: encrypt_action("image"))
     decrypt_btn.config(command=decrypt_action)
 
+    import datetime
+    import os
+
+    def log_history(action, filename):
+        time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        with open(HISTORY_FILE, "a") as f:
+            f.write(f"{action} | {filename} | {time}\n")
+
     # ---------- PASSWORD CHECK ----------
     def check_password(event=None):
         pwd = file_password_entry.get()
@@ -309,12 +324,11 @@ def open_dashboard():
     tk.Button(
         container,
         text="View Encryption History",
-        font=("Arial", 14, "bold"),
+        font=("Arial", 15, "bold"),
         width=30,
         height=2,
         command=open_history_screen
-    ).pack(pady=18)
-
+    ).pack(pady=15)
 
     # ---------- LOGOUT ----------
     tk.Button(
