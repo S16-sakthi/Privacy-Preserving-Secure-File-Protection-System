@@ -70,30 +70,7 @@ def open_history_screen():
 
     load_history()
 
- # Buttons
-    btn_frame = tk.Frame(frame)
-    btn_frame.pack(pady=10)
-
-    tk.Button(
-        btn_frame,
-        text="Clear History",
-        font=("Arial", 12),
-        width=18,
-        command=clear_history
-    ).pack(side="left", padx=10)
-
-    tk.Button(
-        btn_frame,
-        text="Close",
-        font=("Arial", 12),
-        width=18,
-        command=history_win.destroy
-    ).pack(side="left", padx=10)
-
-    load_history()
-
-
-#login screen
+ #login screen
 def open_login_screen():
     global login_frame, entry_username, entry_password
 
